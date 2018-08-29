@@ -1,4 +1,4 @@
-package com.br.ezequias.cacadoresjustica.cacadoresjustica
+package com.br.ezequias.cacadoresjustica
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

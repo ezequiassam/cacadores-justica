@@ -1,4 +1,4 @@
-package com.br.ezequias.cacadoresjustica.cacadoresjustica
+package com.br.ezequias.cacadoresjustica
 
 import org.junit.Test
 import org.junit.runner.RunWith
