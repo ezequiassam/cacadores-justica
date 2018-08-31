@@ -42,12 +42,31 @@ class Conversor {
         return map
     }
 
-    fun listPartes(elements: Elements?): List<Map<String, String>> {
-        var list = mutableListOf<Map<String, String>>()
+    fun listPartes(elements: Elements?): List<Map<String, Any>> {
+        var list = mutableListOf<Map<String, Any>>()
         for (e in elements!!) {
             var key = e.text().substringBefore(":").trim().toUpperCase()
             var value = e.text().substringAfter(":").trim()
-            list.add(mapOf(key to value))
+            var map = mutableMapOf<String, Map<String, Any>>()
+            map.put(key, emptyMap())
+            if (value.contains("Advogad(\\w):".toRegex())) {
+                var advog = value.split("Advogad(\\w):".toRegex())
+                value = advog.get(0)
+                var advogados = advog.subList(1, advog.size) as MutableList
+                var reprensentates = mutableListOf<String>()
+                for ((i, s) in advogados.withIndex()){
+                    if(s.contains("Reprtate:")){
+                        var represt = s.split("Reprtate:")
+                        advogados[i] = represt.get(0).trim()
+                        reprensentates.addAll(represt.subList(1, represt.size))
+                    }
+                }
+                map.put(key, mapOf(key to value, "ADVOGADOS" to advogados, "REPRESENTANTES" to reprensentates))
+                list.add(map)
+                println(map)
+            }else{
+                list.add(mapOf(key to value))
+            }
         }
         return list
     }
