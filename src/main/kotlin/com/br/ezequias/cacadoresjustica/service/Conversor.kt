@@ -35,7 +35,7 @@ class Conversor {
     fun mapDados(elements: Elements?): MutableMap<String, String> {
         var map = mutableMapOf<String, String>()
         for (e in elements!!) {
-            var key = e.text().substringBefore(":").trim().toUpperCase()
+            var key = e.text().substringBefore(":").trim().toLowerCase()
             var value = e.text().substringAfter(":").trim()
             map.put(key, value)
         }
@@ -45,7 +45,7 @@ class Conversor {
     fun listPartes(elements: Elements?): List<Map<String, Any>> {
         var list = mutableListOf<Map<String, Any>>()
         for (e in elements!!) {
-            var key = e.text().substringBefore(":").trim().toUpperCase()
+            var key = e.text().substringBefore(":").trim().toLowerCase()
             var value = e.text().substringAfter(":").trim()
             var map = mutableMapOf<String, Map<String, Any>>()
             map.put(key, emptyMap())
@@ -61,9 +61,8 @@ class Conversor {
                         reprensentates.addAll(represt.subList(1, represt.size))
                     }
                 }
-                map.put(key, mapOf(key to value, "ADVOGADOS" to advogados, "REPRESENTANTES" to reprensentates))
+                map.put(key, mapOf(key to value, "advogados" to advogados, "representantes" to reprensentates))
                 list.add(map)
-                println(map)
             }else{
                 list.add(mapOf(key to value))
             }
@@ -74,7 +73,7 @@ class Conversor {
     fun listMovimentacoes(elements: Elements?): List<Map<String, String>> {
         var list = mutableListOf<Map<String, String>>()
         for (e in elements!!) {
-            var key = e.text().trim().substring(0, 10).toUpperCase()
+            var key = e.text().trim().substring(0, 10).toLowerCase()
             var value = e.text().substring(11).trim()
             list.add(mapOf(key to value))
         }
