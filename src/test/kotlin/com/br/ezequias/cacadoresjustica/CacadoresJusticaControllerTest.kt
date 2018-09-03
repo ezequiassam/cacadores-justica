@@ -1,10 +1,12 @@
 package com.br.ezequias.cacadoresjustica
 
 import com.br.ezequias.cacadoresjustica.controller.CacadoresJusticaController
+import com.br.ezequias.cacadoresjustica.exeption.BusinessError
 import com.br.ezequias.cacadoresjustica.service.ConversorService
 import org.junit.Before
 import org.junit.Test
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpStatus
 
 @SpringBootTest
 class CacadoresJusticaControllerTest {
@@ -32,5 +34,12 @@ class CacadoresJusticaControllerTest {
         var process = controller.carregarProcesso(map)
         assert(process.statusCode.is2xxSuccessful)
         checkNotNull(process.body)
+    }
+
+    @Test
+    fun deveDarErrocarregarProcessoTJMGTest(){
+        var map = mutableMapOf("numero" to "0", "tribunal" to "TJMJ")
+        var process = controller.carregarProcesso(map)
+        assert(process.statusCode.equals(HttpStatus.NO_CONTENT))
     }
 }
