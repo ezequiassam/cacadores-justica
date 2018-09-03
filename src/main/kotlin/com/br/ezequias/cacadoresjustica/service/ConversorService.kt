@@ -11,6 +11,7 @@ import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.util.StringUtils
 import java.net.SocketException
 
 @Service
@@ -67,11 +68,20 @@ class ConversorService {
                     dadosMap.getOrDefault("distribuição", ""),
                     dadosMap.getOrDefault("juiz", ""),
                     dadosMap.getOrDefault("valor da ação", ""))
-//TODO VALIDAR QUANDO TIVER AUTORA E REU
+
             val partes = mutableListOf<PartesProcesso>()
             for (p in partesList) {
+                var req = p.getOrDefault("reqte", "") as String
+                var aud = p.getOrElse("autor") { p.getOrDefault("autora", "") } as String
+                var requerent = ""
+                if (StringUtils.isEmpty(req) && !StringUtils.isEmpty(aud)) {
+                    requerent = aud
+                } else if (StringUtils.isEmpty(aud) && !StringUtils.isEmpty(req)) {
+                    requerent = req
+                }
                 partes.add(PartesProcesso(
-                        p.getOrDefault("reqte", "") as String,
+                        requerent,
+                        p.getOrDefault("réu", "") as String,
                         p.getOrDefault("advogados", emptyList<String>()) as List<String>,
                         p.getOrDefault("representantes", emptyList<String>()) as List<String>
                 ))
@@ -124,6 +134,13 @@ class ConversorService {
                         "advogados" to advogados,
                         "representantes" to reprensentates
                 ))
+            } else if (value.contains("RepreLeg:")) {
+                var repreLeg = value.split("RepreLeg:")
+                value = repreLeg.get(0)
+                var reprensentates = repreLeg.subList(1, repreLeg.size) as MutableList<String>
+                list.add(mapOf(
+                        key to value,
+                        "representantes" to reprensentates))
             } else {
                 list.add(mapOf(key to value))
             }
