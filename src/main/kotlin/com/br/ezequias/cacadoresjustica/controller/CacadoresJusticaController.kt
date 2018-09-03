@@ -1,7 +1,7 @@
 package com.br.ezequias.cacadoresjustica.controller
 
 import com.br.ezequias.cacadoresjustica.exeption.BusinessError
-import com.br.ezequias.cacadoresjustica.service.Conversor
+import com.br.ezequias.cacadoresjustica.service.ConversorService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.CacheControl
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class CacadoresJusticaController @Autowired constructor(val conversor: Conversor) {
+class CacadoresJusticaController @Autowired constructor(val conversorService: ConversorService) {
     @Value("\${cacadores-justica.url.tjsp}")
     lateinit var urlTJSP: String
 
@@ -34,7 +34,7 @@ class CacadoresJusticaController @Autowired constructor(val conversor: Conversor
         headers.cacheControl = CacheControl.noCache().headerValue
         val url = getUrl(numeroProcesso, tribunal)
         try {
-            var processo = conversor.getProcesso(url)
+            val processo = conversorService.getProcesso(url)
             return ResponseEntity(processo, headers, HttpStatus.OK)
         } catch (e: BusinessError) {
             return ResponseEntity(e.mensagem, headers, HttpStatus.valueOf(e.mensagem?.get("codigo").toString().toInt()))

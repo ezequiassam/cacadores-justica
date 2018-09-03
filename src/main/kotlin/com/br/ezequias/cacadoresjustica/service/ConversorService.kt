@@ -4,15 +4,19 @@ import com.br.ezequias.cacadoresjustica.data.DadosProcesso
 import com.br.ezequias.cacadoresjustica.data.Movimentacoes
 import com.br.ezequias.cacadoresjustica.data.PartesProcesso
 import com.br.ezequias.cacadoresjustica.data.Processo
+import com.br.ezequias.cacadoresjustica.exeption.BusinessError
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.net.SocketException
 
 @Service
-class Conversor {
+class ConversorService {
+
+    var mensagemDefaut = "Ocorreu um erro ao processar a solicitação. Tente novamente mais tarde."
 
     fun getProcesso(url: String): Processo {
         var doc = getPagina(url)
@@ -22,16 +26,19 @@ class Conversor {
         var movimentacoes = doc.getElementById("tabelaTodasMovimentacoes")
         return transformProcesso(dadosProcesso, partes, movimentacoes)
     }
-    
-    //    TODO CRIAR TRATAMENTO PARA FALHA DE CONEXÃO E PROCESSO NÃO ENCONTRADO
+
     private fun getPagina(url: String): Document {
         var doc: Element
         try {
             doc = Jsoup.connect(url).get()
         } catch (e: SocketException) {
-            throw e
+            throw BusinessError(mapError("Não foi possivel conectar. Por favor tente novamente mais tarde.", HttpStatus.NO_CONTENT))
         } catch (t: Throwable) {
-            throw t
+            throw BusinessError(mapError(mensagemDefaut, HttpStatus.BAD_REQUEST))
+        }
+        var mensagem = doc.getElementById("spwTabelaMensagem")?.text()
+        if (!mensagem.isNullOrEmpty()) {
+            throw BusinessError(mapError(mensagem!!.replace("Atenção", "").trim(), HttpStatus.NO_CONTENT))
         }
         return doc
     }
@@ -46,37 +53,42 @@ class Conversor {
     }
 
     private fun transformProcesso(dadosProcesso: Element?, partesProcesso: Element, movimentacoesProcesso: Element): Processo {
-        var dadosMap = mapDados(dadosProcesso?.children()?.get(0)?.children())
-        var partesList = listPartes(partesProcesso.children().get(0).children())
-        var movimentacoesList = listMovimentacoes(movimentacoesProcesso.children())
+        try {
 
-        val dados = DadosProcesso(
-                dadosMap.getOrDefault("processo", ""),
-                dadosMap.getOrDefault("classe", ""),
-                dadosMap.getOrDefault("área", ""),
-                dadosMap.getOrDefault("assunto", ""),
-                dadosMap.getOrDefault("distribuição", ""),
-                dadosMap.getOrDefault("juiz", ""),
-                dadosMap.getOrDefault("valor da ação", ""))
+            var dadosMap = mapDados(dadosProcesso?.children()?.get(0)?.children())
+            var partesList = listPartes(partesProcesso.children().get(0).children())
+            var movimentacoesList = listMovimentacoes(movimentacoesProcesso.children())
 
-        val partes = mutableListOf<PartesProcesso>()
-        for (p in partesList) {
-            partes.add(PartesProcesso(
-                    p.getOrDefault("reqte", "") as String,
-                    p.getOrDefault("advogados", emptyList<String>()) as List<String>,
-                    p.getOrDefault("representantes", emptyList<String>()) as List<String>
-            ))
+            val dados = DadosProcesso(
+                    dadosMap.getOrDefault("processo", ""),
+                    dadosMap.getOrDefault("classe", ""),
+                    dadosMap.getOrDefault("área", ""),
+                    dadosMap.getOrDefault("assunto", ""),
+                    dadosMap.getOrDefault("distribuição", ""),
+                    dadosMap.getOrDefault("juiz", ""),
+                    dadosMap.getOrDefault("valor da ação", ""))
+//TODO VALIDAR QUANDO TIVER AUTORA E REU
+            val partes = mutableListOf<PartesProcesso>()
+            for (p in partesList) {
+                partes.add(PartesProcesso(
+                        p.getOrDefault("reqte", "") as String,
+                        p.getOrDefault("advogados", emptyList<String>()) as List<String>,
+                        p.getOrDefault("representantes", emptyList<String>()) as List<String>
+                ))
+            }
+
+            val movimentacoes = mutableListOf<Movimentacoes>()
+            for (m in movimentacoesList) {
+                movimentacoes.add(Movimentacoes(
+                        m.getOrDefault("data", ""),
+                        m.getOrDefault("movimento", "")
+                ))
+            }
+
+            return Processo(partes, movimentacoes, dados)
+        } catch (t: Throwable) {
+            throw BusinessError(mapError(mensagemDefaut, HttpStatus.BAD_REQUEST))
         }
-
-        val movimentacoes = mutableListOf<Movimentacoes>()
-        for (m in movimentacoesList) {
-            movimentacoes.add(Movimentacoes(
-                    m.getOrDefault("data", ""),
-                    m.getOrDefault("movimento", "")
-            ))
-        }
-
-        return Processo(partes, movimentacoes, dados)
     }
 
     private fun mapDados(elements: Elements?): MutableMap<String, String> {
@@ -129,5 +141,11 @@ class Conversor {
         return list
     }
 
+    private fun mapError(mensagem: String, status: HttpStatus): Map<String, Any?> {
+        return mapOf(
+                "tipo" to "erro",
+                "codigo" to status.value(),
+                "mensagem" to mensagem)
+    }
 
 }
