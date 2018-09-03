@@ -1,4 +1,4 @@
-package com.br.ezequias.cacadoresjustica.model
+package com.br.ezequias.cacadoresjustica.data
 
 class Processo(val partesProcesso: List<PartesProcesso>, val movimentacoes: List<Movimentacoes>, val dadosProcesso: DadosProcesso)
 

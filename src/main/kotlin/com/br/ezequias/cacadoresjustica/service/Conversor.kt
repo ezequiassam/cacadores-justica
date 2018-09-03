@@ -1,15 +1,17 @@
 package com.br.ezequias.cacadoresjustica.service
 
-import com.br.ezequias.cacadoresjustica.model.DadosProcesso
-import com.br.ezequias.cacadoresjustica.model.Movimentacoes
-import com.br.ezequias.cacadoresjustica.model.PartesProcesso
-import com.br.ezequias.cacadoresjustica.model.Processo
+import com.br.ezequias.cacadoresjustica.data.DadosProcesso
+import com.br.ezequias.cacadoresjustica.data.Movimentacoes
+import com.br.ezequias.cacadoresjustica.data.PartesProcesso
+import com.br.ezequias.cacadoresjustica.data.Processo
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
+import org.springframework.stereotype.Service
 import java.net.SocketException
 
+@Service
 class Conversor {
 
     fun getProcesso(url: String): Processo {
