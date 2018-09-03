@@ -1,11 +1,11 @@
 package com.br.ezequias.cacadoresjustica.model
 
-class Processo(partesProcesso: PartesProcesso, movimentacoes: List<Movimentacoes>, dadosProcesso: DadosProcesso)
+class Processo(val partesProcesso: List<PartesProcesso>, val movimentacoes: List<Movimentacoes>, val dadosProcesso: DadosProcesso)
 
-class Movimentacoes(data: String, movimento: String)
+class Movimentacoes(val data: String, val movimento: String)
 
-class PartesProcesso(requerente: String, advogados: List<String>, representante: String)
+class PartesProcesso(val requerente: String, val advogados: List<String>, val representantes: List<String>)
 
-class DadosProcesso(numero: String, classe: String, area: String, asunto: String, dataDistribuicao: String,
-                    juiz: String, valorAcao: String)
+class DadosProcesso(val numero: String, val classe: String, val area: String, val assunto: String, val dataDistribuicao: String,
+                    val juiz: String, val valorAcao: String)
 
