@@ -23,6 +23,7 @@ class CacadoresJusticaControllerTest {
         var map = mutableMapOf("numero" to "10022988620158260271", "tribunal" to "TJSP")
         var process = controller.carregarProcesso(map)
         assert(process.statusCode.is2xxSuccessful)
+        checkNotNull(process.body)
     }
 
     @Test
@@ -30,5 +31,6 @@ class CacadoresJusticaControllerTest {
         var map = mutableMapOf("numero" to "08219015120188120001", "tribunal" to "TJMJ")
         var process = controller.carregarProcesso(map)
         assert(process.statusCode.is2xxSuccessful)
+        checkNotNull(process.body)
     }
 }

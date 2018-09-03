@@ -10,6 +10,8 @@ class ConversorServiceTest {
     @Test
     fun getPaginaTest() {
         var process = ConversorService().getProcesso("http://esaj.tjsp.jus.br/cpopg/show.do?processo.codigo=7J0001D040000")
-        checkNotNull(process)
+        checkNotNull(process.dadosProcesso)
+        assert(process.movimentacoes.isNotEmpty())
+        assert(process.partesProcesso.isNotEmpty())
     }
 }
