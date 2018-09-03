@@ -11,7 +11,6 @@ import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.util.StringUtils
 import java.net.SocketException
 
 @Service
@@ -74,7 +73,6 @@ class ConversorService {
                 var requerent = p.toList()
                 partes.add(PartesProcesso(
                         requerent[0].second as String,
-                        p.getOrDefault("réu", "") as String,
                         p.getOrDefault("advogados", emptyList<String>()) as List<String>,
                         p.getOrDefault("representantes", emptyList<String>()) as List<String>
                 ))
