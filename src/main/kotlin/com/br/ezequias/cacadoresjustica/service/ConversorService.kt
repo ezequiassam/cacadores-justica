@@ -71,16 +71,9 @@ class ConversorService {
 
             val partes = mutableListOf<PartesProcesso>()
             for (p in partesList) {
-                var req = p.getOrDefault("reqte", "") as String
-                var aud = p.getOrElse("autor") { p.getOrDefault("autora", "") } as String
-                var requerent = ""
-                if (StringUtils.isEmpty(req) && !StringUtils.isEmpty(aud)) {
-                    requerent = aud
-                } else if (StringUtils.isEmpty(aud) && !StringUtils.isEmpty(req)) {
-                    requerent = req
-                }
+                var requerent = p.toList()
                 partes.add(PartesProcesso(
-                        requerent,
+                        requerent[0].second as String,
                         p.getOrDefault("réu", "") as String,
                         p.getOrDefault("advogados", emptyList<String>()) as List<String>,
                         p.getOrDefault("representantes", emptyList<String>()) as List<String>
