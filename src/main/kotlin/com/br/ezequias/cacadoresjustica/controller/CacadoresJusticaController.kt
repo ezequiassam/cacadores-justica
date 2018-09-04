@@ -4,9 +4,9 @@ import com.br.ezequias.cacadoresjustica.exeption.BusinessError
 import com.br.ezequias.cacadoresjustica.service.ConversorService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.CacheControl
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.RequestMapping
@@ -31,7 +31,8 @@ class CacadoresJusticaController @Autowired constructor(val conversorService: Co
         }
 
         val headers = HttpHeaders()
-        headers.cacheControl = CacheControl.noCache().headerValue
+        headers.contentType = MediaType.APPLICATION_JSON
+        headers.accessControlAllowOrigin = "*"
         val url = getUrl(numeroProcesso, tribunal)
         try {
             val processo = conversorService.getProcesso(url)
